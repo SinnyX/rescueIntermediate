@@ -19,11 +19,11 @@ void runInTrack(int powerL, int powerR)
     }
     else if (analog(0) <= refL)
     {
-      tr(20);
+      tr(50);
     }
     else if (analog(2) <= refR)
     {
-      tl(20);
+      tl(50);
     }
     else if (analog(1) > refM)
     {
@@ -31,9 +31,74 @@ void runInTrack(int powerL, int powerR)
     }
   }
   ao();
-  delay(100);
-  bk(30);
-  delay(250);
+  delay(200);
+  bk(50);
+  delay(200);
+  ao();
+  delay(200);
+}
+
+void runInTimer(int powerL, int powerR, unsigned long period)
+{
+  timer0_millis = 0;
+  while (true)
+  {
+    if (analog(1) <= refM)
+    {
+      ao();
+      break;
+    }
+    else if (analog(0) <= refL)
+    {
+      tr(50);
+    }
+    else if (analog(2) <= refR)
+    {
+      tl(50);
+    }
+    else if (analog(1) > refM)
+    {
+      fd2(powerL, powerR);
+    }
+    if (timer_robot(period))
+    {
+      break;
+    }
+  }
+  bk2(powerL, powerR);
+  delay(200);
+  ao();
+  delay(200);
+}
+
+void forwardTrack(int ms)
+{
+  while (true)
+  {
+    fd2(10, 10);
+    if (analog(0) <= refL || analog(2) <= refR)
+    {
+      break;
+    }
+  }
+  if (analog(0) < refL)
+  {
+    while (analog(2) > refR)
+    {
+      tl(20);
+    }
+  }
+  else if (analog(2) < refR)
+  {
+    while (analog(0) > refL)
+    {
+      tr(20);
+    }
+  }
+  ao();
+  delay(200);
+  bk(50);
+  delay(ms);
   ao();
   delay(100);
 }
@@ -63,14 +128,16 @@ void backwardTrack(int powerL, int powerR)
   {
     while (analog(4) > refBR)
     {
-      tl(20);
+      motor(1, 0);
+      motor(2, -20);
     }
   }
   else if (analog(4) < refBR)
   {
     while (analog(3) > refBL)
     {
-      tr(20);
+      motor(1, -20);
+      motor(2, 0);
     }
   }
   delay(30);
@@ -89,5 +156,16 @@ void moveBlock(char d, int powerL, int powerR, int ms)
     bk2(powerL, powerR);
   delay(ms);
   ao();
-  delay(30);
+  delay(300);
+}
+
+bool timer_robot(unsigned long period)
+{
+  if (millis() - last_time > period)
+  {
+    last_time = 0;
+    timer0_millis = 0;
+    return true;
+  }
+  return false;
 }

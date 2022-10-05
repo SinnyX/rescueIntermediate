@@ -1,18 +1,19 @@
 void servoUp()
 {
-  servo(1, 135);
+  servo(1, 60);
   delay(300);
 }
 
 void servoKick()
 {
-  servo(1, 85);
+  servo(1, 95);
   delay(300);
 }
 
 void servoSet(int p)
 {
   glcdClear();
+  glcdMode(2);
   setTextSize(2);
   while (true) {
     int x = knob(0, 180);
@@ -28,6 +29,7 @@ void servoSet(int p)
 void sensorSet(int ref)
 {
   glcdClear();
+  glcdMode(2);
   setTextSize(2);
   while (true)
   {
